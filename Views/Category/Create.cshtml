@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Create Category";
+}
+
+@model Category
+
+
+<form>
+    <div class="border-danger p-3">
+        <fieldset>
+            <legend>Create Category</legend>
+            <div row mt-3>
+                <label for="CategoryName" class="form-label mt-4">Category Name</label>
+                <input asp-for="Name" type="text" class="form-control" id="CategoryName" aria-describedby="emailHelp" placeholder="Enter Category Name">
+            </div>
+            <div row mt-3>
+                <label asp-for="DisplayOrder" for="exampleInputDisplayOrder" class="form-label mt-4"></label>
+                <input asp-for="DisplayOrder" type="number" class="form-control" id="exampleInputDisplayOrder" aria-describedby="DisplayOrder" placeholder="Enter Display Order">
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary form-control">Create</button>
+                </div>
+                <div class="col-md-3">
+                    <a asp-action="Index" asp-controller="Category" class="btn btn-outline-secondary form-control">Back to List</a>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
