@@ -1,0 +1,58 @@
+﻿using DotNetMasteryProject.Data;
+using DotNetMasteryProject.Models;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DotNetMasteryProject.Controllers
+{
+    public class CategoryController : Controller
+    {
+        private readonly ApplicationDbContext _db;
+        public CategoryController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+        public IActionResult Index()
+        {
+            try
+            {
+                List<Category> categories = _db.Categories.ToList();
+                return View(categories);
+            }
+            catch
+            {
+                return View(new List<Category> () );
+            }
+            
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Create( Category obj)
+        {
+            if(obj.Name == obj.DisplayOrder.ToString())
+            {
+                //adding custom validation 
+                ModelState.AddModelError("name", "Display order and name can not be same.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            try
+            {
+                _db.Categories.Add(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index", "Category");
+            }
+            catch(Exception ex)
+            {
+                //throw Exception
+                return View();
+            }
+            
+        }
+    }
+}
