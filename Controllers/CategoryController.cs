@@ -15,7 +15,9 @@ namespace DotNetMasteryProject.Controllers
         {
             try
             {
-                List<Category> categories = _db.Categories.ToList();
+                var categories = _db.Categories
+                .OrderBy(c => c.DisplayOrder)
+                .ToList();
                 return View(categories);
             }
             catch
@@ -61,38 +63,68 @@ namespace DotNetMasteryProject.Controllers
                 return NotFound();
             }
             Category? obj = _db.Categories.Find(id); //works on primary key
-            Category? obj2ndWay = _db.Categories.FirstOrDefault( c => c.Name == "Action"); // works on any kind of column
+            Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Name == "Action"); // works on any kind of column
             Category? obj3rdWay = _db.Categories.Where(c => c.DisplayOrder == 2).FirstOrDefault(); // works on any kind of column
-            if(obj == null )
+            if (obj == null)
             {
                 return NotFound();
             }
             return View(obj);
         }
         [HttpPost]
-        public IActionResult Edit( Category obj)
+        public IActionResult Edit(Category obj)
         {
-            if(obj.Name == obj.DisplayOrder.ToString())
+            if (obj.Name == obj.DisplayOrder.ToString())
             {
-                //adding custom validation 
-                ModelState.AddModelError("name", "Display order and name can not be same.");
+                ModelState.AddModelError("name", "Display order and name cannot be the same.");
             }
+
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(obj);
+            }
+
+            try
+            {
+                var objFromDb = _db.Categories.FirstOrDefault(c => c.Category21Id == obj.Category21Id);
+                if (objFromDb == null)
+                {
+                    return NotFound();
+                }
+
+                // Manually update properties
+                objFromDb.Name = obj.Name;
+                objFromDb.DisplayOrder = obj.DisplayOrder;
+
+                _db.SaveChanges();
+                return RedirectToAction("Index", "Category");
+            }
+            catch (Exception)
+            {
+                return View(obj);
+            }
+        }
+        public IActionResult Delete(int? id)
+        {
+            if (id == 0 || id < 1 || id == null)
+            {
+                return NotFound();
+            }
+            Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Category21Id == id);
+            if (obj2ndWay == null)
+            {
+                return NotFound();
             }
             try
             {
-                // _db.Categories.Add(obj);
-                // _db.SaveChanges();
+                _db.Categories.Remove(obj2ndWay);
+                _db.SaveChanges();
                 return RedirectToAction("Index", "Category");
             }
-            catch(Exception ex)
+            catch
             {
-                //throw Exception
-                return View();
+                return RedirectToAction("Index", "Category");
             }
-            
         }
     }
 }
