@@ -47,6 +47,7 @@ namespace DotNetMasteryProject.Controllers
             {
                 _db.Categories.Add(obj);
                 _db.SaveChanges();
+                TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index", "Category");
             }
             catch (Exception ex)
@@ -97,6 +98,7 @@ namespace DotNetMasteryProject.Controllers
                 objFromDb.DisplayOrder = obj.DisplayOrder;
 
                 _db.SaveChanges();
+                TempData["success"] = "Category edited successfully";
                 return RedirectToAction("Index", "Category");
             }
             catch (Exception)
@@ -119,6 +121,7 @@ namespace DotNetMasteryProject.Controllers
             {
                 _db.Categories.Remove(obj2ndWay);
                 _db.SaveChanges();
+                TempData["success"] = "Category deleted successfully";
                 return RedirectToAction("Index", "Category");
             }
             catch
