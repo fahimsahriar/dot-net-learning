@@ -1,4 +1,5 @@
 ﻿using DMP.DataAccess.Data;
+using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,18 +7,16 @@ namespace DotNetMasteryProject.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public CategoryController(ApplicationDbContext db)
+        private readonly ICategoryRepository _repo;
+        public CategoryController(ICategoryRepository repo)
         {
-            _db = db;
+            _repo = repo;
         }
         public IActionResult Index()
         {
             try
             {
-                var categories = _db.Categories
-                .OrderBy(c => c.DisplayOrder)
-                .ToList();
+                var categories = _repo.GetAll();
                 return View(categories);
             }
             catch
@@ -45,8 +44,8 @@ namespace DotNetMasteryProject.Controllers
             }
             try
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _repo.Add(obj);
+                _repo.Save();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index", "Category");
             }
@@ -63,9 +62,9 @@ namespace DotNetMasteryProject.Controllers
             {
                 return NotFound();
             }
-            Category? obj = _db.Categories.Find(id); //works on primary key
-            Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Name == "Action"); // works on any kind of column
-            Category? obj3rdWay = _db.Categories.Where(c => c.DisplayOrder == 2).FirstOrDefault(); // works on any kind of column
+            Category? obj = _repo.Get(c => c.Category21Id == id); //works on primary key
+            //Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Name == "Action"); // works on any kind of column
+            //Category? obj3rdWay = _db.Categories.Where(c => c.DisplayOrder == 2).FirstOrDefault(); // works on any kind of column
             if (obj == null)
             {
                 return NotFound();
@@ -87,7 +86,7 @@ namespace DotNetMasteryProject.Controllers
 
             try
             {
-                var objFromDb = _db.Categories.FirstOrDefault(c => c.Category21Id == obj.Category21Id);
+                var objFromDb = _repo.Get(c => c.Category21Id == obj.Category21Id);
                 if (objFromDb == null)
                 {
                     return NotFound();
@@ -97,7 +96,7 @@ namespace DotNetMasteryProject.Controllers
                 objFromDb.Name = obj.Name;
                 objFromDb.DisplayOrder = obj.DisplayOrder;
 
-                _db.SaveChanges();
+                _repo.Save();
                 TempData["success"] = "Category edited successfully";
                 return RedirectToAction("Index", "Category");
             }
@@ -112,15 +111,15 @@ namespace DotNetMasteryProject.Controllers
             {
                 return NotFound();
             }
-            Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Category21Id == id);
+            Category? obj2ndWay = _repo.Get(c => c.Category21Id == id);
             if (obj2ndWay == null)
             {
                 return NotFound();
             }
             try
             {
-                _db.Categories.Remove(obj2ndWay);
-                _db.SaveChanges();
+                _repo.Remove(obj2ndWay);
+                _repo.Save();
                 TempData["success"] = "Category deleted successfully";
                 return RedirectToAction("Index", "Category");
             }
