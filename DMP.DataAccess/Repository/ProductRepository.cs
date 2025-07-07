@@ -4,10 +4,10 @@ using DMP.Models;
 
 namespace DMP.DataAccess.Repository
 {
-    public class CategoryRepository : Repository<Category>, ICategoryRepository
+    public class ProductRepository : Repository<Product>,IProductRepository
     {
         private readonly ApplicationDbContext _dbContext;
-        public CategoryRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public ProductRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }
@@ -16,9 +16,9 @@ namespace DMP.DataAccess.Repository
             _dbContext.SaveChanges();
         }
 
-        public void Update(Category category)
+        public void Update(Product product)
         {
-            _dbContext.Categories.Update(category);
+            _dbContext.Products.Update(product);
         }
     }
 }

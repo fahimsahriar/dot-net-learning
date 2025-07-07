@@ -1,5 +1,4 @@
-﻿using DMP.DataAccess.Data;
-using DMP.DataAccess.Repository.IRepository;
+﻿using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
 
