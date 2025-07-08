@@ -7,18 +7,22 @@ namespace DMP.DataAccess.Repository
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly UnitOfWork<Category> _unitOfWork;
         public CategoryRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
+            _unitOfWork = new UnitOfWork<Category>(_dbContext);
         }
         public void Save()
         {
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
+            _unitOfWork.Save();
         }
 
         public void Update(Category category)
         {
-            _dbContext.Categories.Update(category);
+            //_dbContext.Categories.Update(category);
+            _unitOfWork.Update(category);
         }
     }
 }
