@@ -13,10 +13,10 @@ namespace DMP.DataAccess.Repository
             _dbContext = dbContext;
             _unitOfWork = new UnitOfWork<Category>(_dbContext);
         }
-        public void Save()
+        public async Task Save()
         {
             //_dbContext.SaveChanges();
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
         }
 
         public void Update(Category category)

@@ -2,7 +2,7 @@
 {
     public interface IUnitOfWork<T>
     {
-        public void Save();
+        public Task Save();
         public void Update(T entity);
     }
 }

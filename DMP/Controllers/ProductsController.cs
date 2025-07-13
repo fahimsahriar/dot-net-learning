@@ -20,7 +20,7 @@ namespace DotNetMasteryProject.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(_productRepository.GetAll());
+            return View(await _productRepository.GetAll());
         }
 
         // GET: Products/Details/5
@@ -31,7 +31,7 @@ namespace DotNetMasteryProject.Controllers
                 return NotFound();
             }
 
-            var product = _productRepository.Get(m => m.Id == id);
+            var product = await _productRepository.Get(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();

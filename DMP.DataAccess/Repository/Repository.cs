@@ -12,22 +12,22 @@ namespace DMP.DataAccess.Repository
             _dbContext = dbContext;
             this.dbSet = _dbContext.Set<T>();
         }
-        public void Add(T entity)
+        public async void Add(T entity)
         {
-            dbSet.Add(entity);
+            await dbSet.AddAsync(entity);
         }
 
-        public T Get(System.Linq.Expressions.Expression<Func<T, bool>> filter)
+        public async Task<T> Get(System.Linq.Expressions.Expression<Func<T, bool>> filter)
         {
             IQueryable<T> query = dbSet;
             query = query.Where(filter);
-            return query.FirstOrDefault();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
             IQueryable<T> query = dbSet;
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
         public void Remove(T entity)

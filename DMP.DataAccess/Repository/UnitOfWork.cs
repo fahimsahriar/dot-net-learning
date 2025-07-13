@@ -13,9 +13,9 @@ namespace DMP.DataAccess.Repository
             _dbContext = dbContext;
             this._dbSet = _dbContext.Set<T>();
         }
-        public void Save()
+        public async Task Save()
         {
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
         public void Update(T entity)
         {

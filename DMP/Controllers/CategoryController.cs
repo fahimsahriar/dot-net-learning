@@ -11,18 +11,18 @@ namespace DotNetMasteryProject.Controllers
         {
             _repo = repo;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                var categories = _repo.GetAll();
+                var categories = await _repo.GetAll();
+                categories = categories.OrderBy( item => item.DisplayOrder).ToList();
                 return View(categories);
             }
             catch
             {
                 return View(new List<Category>());
             }
-
         }
 
         public IActionResult Create()
@@ -30,7 +30,7 @@ namespace DotNetMasteryProject.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Category obj)
+        public async Task<IActionResult> Create(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())
             {
@@ -44,24 +44,25 @@ namespace DotNetMasteryProject.Controllers
             try
             {
                 _repo.Add(obj);
-                _repo.Save();
+                await _repo.Save();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index", "Category");
             }
             catch (Exception ex)
             {
+                TempData["error"] = "Category creation failed.";
                 //throw Exception
                 return View();
             }
 
         }
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == 0 || id < 1 || id == null)
             {
                 return NotFound();
             }
-            Category? obj = _repo.Get(c => c.Category21Id == id); //works on primary key
+            Category? obj = await _repo.Get(c => c.Category21Id == id); //works on primary key
             //Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Name == "Action"); // works on any kind of column
             //Category? obj3rdWay = _db.Categories.Where(c => c.DisplayOrder == 2).FirstOrDefault(); // works on any kind of column
             if (obj == null)
@@ -71,7 +72,7 @@ namespace DotNetMasteryProject.Controllers
             return View(obj);
         }
         [HttpPost]
-        public IActionResult Edit(Category obj)
+        public async Task<IActionResult> Edit(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())
             {
@@ -85,7 +86,7 @@ namespace DotNetMasteryProject.Controllers
 
             try
             {
-                var objFromDb = _repo.Get(c => c.Category21Id == obj.Category21Id);
+                var objFromDb = await _repo.Get(c => c.Category21Id == obj.Category21Id);
                 if (objFromDb == null)
                 {
                     return NotFound();
@@ -95,7 +96,7 @@ namespace DotNetMasteryProject.Controllers
                 objFromDb.Name = obj.Name;
                 objFromDb.DisplayOrder = obj.DisplayOrder;
 
-                _repo.Save();
+                await _repo.Save();
                 TempData["success"] = "Category edited successfully";
                 return RedirectToAction("Index", "Category");
             }
@@ -104,13 +105,13 @@ namespace DotNetMasteryProject.Controllers
                 return View(obj);
             }
         }
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == 0 || id < 1 || id == null)
             {
                 return NotFound();
             }
-            Category? obj2ndWay = _repo.Get(c => c.Category21Id == id);
+            Category? obj2ndWay = await _repo.Get(c => c.Category21Id == id);
             if (obj2ndWay == null)
             {
                 return NotFound();
@@ -118,7 +119,7 @@ namespace DotNetMasteryProject.Controllers
             try
             {
                 _repo.Remove(obj2ndWay);
-                _repo.Save();
+                await _repo.Save();
                 TempData["success"] = "Category deleted successfully";
                 return RedirectToAction("Index", "Category");
             }
