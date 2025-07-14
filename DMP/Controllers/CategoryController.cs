@@ -77,7 +77,7 @@ namespace DotNetMasteryProject.Controllers
             {
                 return NotFound();
             }
-            Category? obj = await _repo.Get(c => c.Category21Id == id); //works on primary key
+            Category? obj = await _repo.Get(c => c.Id == id); //works on primary key
             //Category? obj2ndWay = _db.Categories.FirstOrDefault(c => c.Name == "Action"); // works on any kind of column
             //Category? obj3rdWay = _db.Categories.Where(c => c.DisplayOrder == 2).FirstOrDefault(); // works on any kind of column
             if (obj == null)
@@ -102,7 +102,7 @@ namespace DotNetMasteryProject.Controllers
 
             try
             {
-                var objFromDb = await _repo.Get(c => c.Category21Id == obj.Category21Id);
+                var objFromDb = await _repo.Get(c => c.Id == obj.Id);
                 if (objFromDb == null)
                 {
                     return NotFound();
@@ -127,7 +127,7 @@ namespace DotNetMasteryProject.Controllers
             {
                 return NotFound();
             }
-            Category? obj2ndWay = await _repo.Get(c => c.Category21Id == id);
+            Category? obj2ndWay = await _repo.Get(c => c.Id == id);
             if (obj2ndWay == null)
             {
                 return NotFound();

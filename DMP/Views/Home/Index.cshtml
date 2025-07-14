@@ -2,7 +2,61 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@model List<Product>
+@{
+    int? selectedCategory = ViewBag.SelectedCategory;
+    int pageNumber = ViewBag.CurrentPage;
+    int pageSize = ViewBag.PageSize;
+    int totalPages = ViewBag.TotalPages;
+    int serial = (pageNumber - 1) * pageSize + 1;
+}
+
+<h2>Product List</h2>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@serial</td>
+                <td>@product.Name</td>
+                <td>@product.Category.Name</td>
+            </tr>
+            serial++;
+        }
+    </tbody>
+</table>
+
+@if (totalPages > 1)
+{
+    <ul class="pagination pagination-sm">
+        @if (pageNumber > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@(pageNumber - 1)&pageSize=@pageSize">&laquo;</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == pageNumber ? "active" : "")">
+                <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@i&pageSize=@pageSize">@i</a>
+            </li>
+        }
+
+        @if (pageNumber < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@(pageNumber + 1)&pageSize=@pageSize">&raquo;</a>
+            </li>
+        }
+    </ul>
+}
+

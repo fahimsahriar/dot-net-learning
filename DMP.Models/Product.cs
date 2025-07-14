@@ -13,5 +13,8 @@ namespace DMP.Models
         public int Stock { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        [Required(ErrorMessage = "Category is required")]
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
     }
 }

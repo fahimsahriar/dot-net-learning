@@ -5,8 +5,7 @@ namespace DMP.Models
 {
     public class Category
     {
-        [Key]
-        public int Category21Id { get; set; }
+        public int Id { get; set; }
         [Required]
         [MaxLength(30)]
         public string Name { get; set; }

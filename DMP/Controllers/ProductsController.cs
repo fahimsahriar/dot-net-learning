@@ -27,15 +27,17 @@ namespace DotNetMasteryProject.Controllers
             }
             try
             {
-                var products = await _productRepository.GetAll(pageNumber, pageSize);
-                if (products == null || !products.Any())
-                {
-                    return View(new List<Product>());
-                }
+                var categories = _context.Categories.ToList();
+                ViewBag.Categories = categories;
                 ViewBag.CurrentPage = pageNumber;
                 ViewBag.PageSize = pageSize;
                 var totalItems = await _productRepository.GetTotalItemCount();
                 ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var products = await _productRepository.GetAll(pageNumber, pageSize);
+                if (products == null || !products.Any())
+                {
+                    return View(new List<Product>());
+                }               
                 return View(products);
             }
             catch
@@ -64,6 +66,8 @@ namespace DotNetMasteryProject.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            var categories = _context.Categories.ToList();
+            ViewBag.Categories = categories;
             return View();
         }
 
@@ -72,14 +76,18 @@ namespace DotNetMasteryProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Stock,CreatedAt,UpdatedAt")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Stock,CreatedAt,UpdatedAt,CategoryId")] Product product)
         {
             if (ModelState.IsValid)
             {
                 _productRepository.Add(product);
                 await _productRepository.Save();
+                TempData["success"] = "Product created successfully";
                 return RedirectToAction(nameof(Index));
             }
+            var categories = _context.Categories.ToList();
+            ViewBag.Categories = categories;
+            TempData["error"] = "Product creation failed.";
             return View(product);
         }
 
