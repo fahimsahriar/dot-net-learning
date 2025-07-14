@@ -3,6 +3,7 @@ using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace DotNetMasteryProject.Controllers
 {
@@ -18,9 +19,19 @@ namespace DotNetMasteryProject.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
-            return View(await _productRepository.GetAll());
+            var totalItems = await _productRepository.GetTotalItemCount();
+            var products = await _productRepository.GetAll(pageNumber, pageSize);
+
+            if (products == null || !products.Any())
+            {
+                return View(new List<Product>());
+            }
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            return View(products);
         }
 
         // GET: Products/Details/5
@@ -56,7 +67,7 @@ namespace DotNetMasteryProject.Controllers
             if (ModelState.IsValid)
             {
                 _productRepository.Add(product);
-                _productRepository.Save();
+                await _productRepository.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -70,7 +81,7 @@ namespace DotNetMasteryProject.Controllers
                 return NotFound();
             }
 
-            var product = _productRepository.Get(m => m.Id == id);
+            var product = await _productRepository.Get(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -96,11 +107,11 @@ namespace DotNetMasteryProject.Controllers
                 try
                 {
                     _productRepository.Update(product);
-                    _productRepository.Save();
+                    await _productRepository.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!await ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -122,7 +133,7 @@ namespace DotNetMasteryProject.Controllers
                 return NotFound();
             }
 
-            var product = _productRepository.Get(m => m.Id == id);
+            var product = await _productRepository.Get(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -146,9 +157,9 @@ namespace DotNetMasteryProject.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private async Task<bool> ProductExists(int id)
         {
-            if(_productRepository.Get(e => e.Id == id) != null)
+            if(await _productRepository.Get(e => e.Id == id) != null)
                 return true;
             else return false;
         }

@@ -23,11 +23,22 @@ namespace DMP.DataAccess.Repository
             query = query.Where(filter);
             return await query.FirstOrDefaultAsync();
         }
-
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<int> GetTotalItemCount()
         {
             IQueryable<T> query = dbSet;
-            return await query.ToListAsync();
+            return await query.CountAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAll(int pageNumber = 1, int pageSize = 10)
+        {
+            IQueryable<T> query = dbSet;
+            var totalItems = await query.CountAsync();
+            var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+            //return await query.ToListAsync();
+            return items;
         }
 
         public void Remove(T entity)

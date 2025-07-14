@@ -30,6 +30,7 @@ namespace DotNetMasteryProject.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())
@@ -72,6 +73,7 @@ namespace DotNetMasteryProject.Controllers
             return View(obj);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())
