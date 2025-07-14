@@ -19,19 +19,29 @@ namespace DotNetMasteryProject.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
         {
-            var totalItems = await _productRepository.GetTotalItemCount();
-            var products = await _productRepository.GetAll(pageNumber, pageSize);
-
-            if (products == null || !products.Any())
+            if (pageNumber < 0 || pageSize < 0)
             {
                 return View(new List<Product>());
             }
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.PageSize = pageSize;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            return View(products);
+            try
+            {
+                var products = await _productRepository.GetAll(pageNumber, pageSize);
+                if (products == null || !products.Any())
+                {
+                    return View(new List<Product>());
+                }
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.PageSize = pageSize;
+                var totalItems = await _productRepository.GetTotalItemCount();
+                ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                return View(products);
+            }
+            catch
+            {
+                return View(new List<Product>());
+            }            
         }
 
         // GET: Products/Details/5

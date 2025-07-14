@@ -14,6 +14,9 @@
         </div>
     </div>
     <div style="overflow-y: auto;">
+        @{
+            int serialNumber = ((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1;
+        }
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -27,7 +30,7 @@
                 @foreach (var obj in Model)
                 {
                     <tr>
-                        <td>@obj.Category21Id</td>
+                        <td>@serialNumber</td>
                         <td>@obj.Name</td>
                         <td>@obj.DisplayOrder</td>
                         <td>
@@ -37,8 +40,37 @@
                             </div>
                         </td>
                     </tr>
+                    serialNumber++;
                 }
             </tbody>
         </table>
+    </div>
+    <!-- Pagination Controls -->
+    <div>
+        @if (ViewBag.TotalPages > 1)
+        {
+            <ul class="pagination pagination-sm">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?pageNumber=@(ViewBag.CurrentPage - 1)&pageSize=@ViewBag.PageSize">&laquo;</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="?pageNumber=@i&pageSize=@ViewBag.PageSize">@i</a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?pageNumber=@(ViewBag.CurrentPage + 1)&pageSize=@ViewBag.PageSize">&raquo;</a>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 </div>

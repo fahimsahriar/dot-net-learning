@@ -1,4 +1,5 @@
-﻿using DMP.DataAccess.Repository.IRepository;
+﻿using DMP.DataAccess.Repository;
+using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +12,25 @@ namespace DotNetMasteryProject.Controllers
         {
             _repo = repo;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
         {
+            if (pageNumber < 0 || pageSize < 0)
+            {
+                return View(new List<Category>());
+            }
             try
             {
-                var categories = await _repo.GetAll();
+                var categories = await _repo.GetAll(pageNumber, pageSize);
+                if (categories == null || !categories.Any())
+                {
+                    return View(new List<Category>());
+                }
                 categories = categories.OrderBy( item => item.DisplayOrder).ToList();
+
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.PageSize = pageSize;
+                var totalItems = await _repo.GetTotalItemCount();
+                ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 return View(categories);
             }
             catch
