@@ -2,8 +2,8 @@
 using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing.Printing;
 
 namespace DotNetMasteryProject.Controllers
 {
@@ -11,11 +11,13 @@ namespace DotNetMasteryProject.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ProductsController(ApplicationDbContext context, IProductRepository productRepository)
+        public ProductsController(ApplicationDbContext context, IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _context = context;
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
         // GET: Products
@@ -76,10 +78,12 @@ namespace DotNetMasteryProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Stock,CreatedAt,UpdatedAt,CategoryId")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Stock,CategoryId")] Product product)
         {
             if (ModelState.IsValid)
             {
+                product.CreatedAt = DateTime.UtcNow;
+                product.UpdatedAt = DateTime.UtcNow;
                 _productRepository.Add(product);
                 await _productRepository.Save();
                 TempData["success"] = "Product created successfully";
@@ -100,6 +104,8 @@ namespace DotNetMasteryProject.Controllers
             }
 
             var product = await _productRepository.Get(m => m.Id == id);
+            // Optionally load categories for dropdown
+            ViewBag.Categories = await _categoryRepository.GetAll();
             if (product == null)
             {
                 return NotFound();
@@ -112,7 +118,7 @@ namespace DotNetMasteryProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Stock,CreatedAt,UpdatedAt")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,CategoryId,Price,Stock,CreatedAt,UpdatedAt")] Product product)
         {
             if (id != product.Id)
             {

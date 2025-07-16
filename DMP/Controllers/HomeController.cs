@@ -1,9 +1,8 @@
+using DMP.DataAccess.Data;
 using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Drawing.Printing;
 
 namespace DotNetMasteryProject.Controllers
 {
@@ -11,11 +10,13 @@ namespace DotNetMasteryProject.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductRepository _productRepository;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository)
+        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ApplicationDbContext context)
         {
             _logger = logger;
             _productRepository = productRepository;
+            _context = context;
         }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
@@ -26,10 +27,11 @@ namespace DotNetMasteryProject.Controllers
             }
             try
             {
-                ViewBag.CurrentPage = pageNumber;
-                ViewBag.PageSize = pageSize;
-                var totalItems = await _productRepository.GetTotalItemCount();
-                ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var categories = _context.Categories.ToList();
+                //ViewBag.CurrentPage = pageNumber;
+                //ViewBag.PageSize = pageSize;
+                //var totalItems = await _productRepository.GetTotalItemCount();
+                //ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var products = await _productRepository.GetAll(pageNumber, pageSize);
                 if (products == null || !products.Any())
                 {

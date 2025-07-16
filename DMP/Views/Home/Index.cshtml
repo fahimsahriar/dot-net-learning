@@ -4,11 +4,11 @@
 
 @model List<Product>
 @{
-    int? selectedCategory = ViewBag.SelectedCategory;
-    int pageNumber = ViewBag.CurrentPage;
-    int pageSize = ViewBag.PageSize;
-    int totalPages = ViewBag.TotalPages;
-    int serial = (pageNumber - 1) * pageSize + 1;
+    // int? selectedCategory = ViewBag.SelectedCategory;
+    // int pageNumber = ViewBag.CurrentPage;
+    // int pageSize = ViewBag.PageSize;
+    // int totalPages = ViewBag.TotalPages;
+    // int serial = (pageNumber - 1) * pageSize + 1;
 }
 
 <h2>Product List</h2>
@@ -25,16 +25,14 @@
         @foreach (var product in Model)
         {
             <tr>
-                <td>@serial</td>
                 <td>@product.Name</td>
-                <td>@product.Category.Name</td>
+                @* <td>@product.Category.Name</td> *@
             </tr>
-            serial++;
         }
     </tbody>
 </table>
 
-@if (totalPages > 1)
+@* @if (totalPages > 1)
 {
     <ul class="pagination pagination-sm">
         @if (pageNumber > 1)
@@ -58,5 +56,5 @@
             </li>
         }
     </ul>
-}
+} *@
 
