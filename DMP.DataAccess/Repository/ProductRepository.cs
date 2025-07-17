@@ -3,6 +3,7 @@ using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DMP.DataAccess.Repository
 {
@@ -34,6 +35,33 @@ namespace DMP.DataAccess.Repository
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GellAllWithCategoryAsync(int? categoryId, int pageNumber = 1, int pageSize = 10)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                return await Task.FromResult<IEnumerable<Product>>(new List<Product>());
+            }
+            var query = _dbContext.Products
+                            .Include(p => p.Category)
+                            .AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+            var products = await query
+                            .OrderBy(p => p.Name)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+            //return await _dbContext.Products
+            //    .Include(p => p.Category)
+            //    .Skip((pageNumber - 1) * pageSize)
+            //    .Take(pageSize)
+            //    .ToListAsync();
+            return products;
         }
 
         public Task<int> GetTotalItemCount()

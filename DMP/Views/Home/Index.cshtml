@@ -4,57 +4,73 @@
 
 @model List<Product>
 @{
-    // int? selectedCategory = ViewBag.SelectedCategory;
-    // int pageNumber = ViewBag.CurrentPage;
-    // int pageSize = ViewBag.PageSize;
-    // int totalPages = ViewBag.TotalPages;
-    // int serial = (pageNumber - 1) * pageSize + 1;
+    int? selectedCategory = 1;
+    int pageNumber = ViewBag.CurrentPage;
+    int pageSize = ViewBag.PageSize;
+    int totalPages = ViewBag.TotalPages;
+    List<Category> categories = ViewBag.Categories as List<Category>;
 }
 
-<h2>Product List</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Product List</h2>
 
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Product</th>
-            <th>Category</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Name</td>
-                @* <td>@product.Category.Name</td> *@
-            </tr>
-        }
-    </tbody>
-</table>
+    <form method="get" class="d-flex">
+        <select class="form-select form-select-sm me-2" name="categoryId" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            @foreach (var category in categories)
+            {
+                var isSelected = category.Id == selectedCategory ? "selected" : "";
 
-@* @if (totalPages > 1)
+                @* <option value="@category.Id" @(item.Value == selectedCategory ? "selected" : "")> *@
+                <option value="@category.Id">
+                    @category.Name
+                </option>
+            }
+        </select>
+        <input type="hidden" name="pageSize" value="@pageSize" />
+        <input type="hidden" name="pageNumber" value="1" />
+    </form>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    @foreach (var product in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="https://www.dummyimage.com/600x400/000/fff" class="card-img-top" alt="Product Image">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text text-muted">Category: @product.Category.Name</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (totalPages > 1)
 {
-    <ul class="pagination pagination-sm">
-        @if (pageNumber > 1)
-        {
-            <li class="page-item">
-                <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@(pageNumber - 1)&pageSize=@pageSize">&laquo;</a>
-            </li>
-        }
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center pagination-sm">
+            @if (pageNumber > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@(pageNumber - 1)&pageSize=@pageSize">&laquo;</a>
+                </li>
+            }
 
-        @for (int i = 1; i <= totalPages; i++)
-        {
-            <li class="page-item @(i == pageNumber ? "active" : "")">
-                <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@i&pageSize=@pageSize">@i</a>
-            </li>
-        }
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == pageNumber ? "active" : "")">
+                    <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@i&pageSize=@pageSize">@i</a>
+                </li>
+            }
 
-        @if (pageNumber < totalPages)
-        {
-            <li class="page-item">
-                <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@(pageNumber + 1)&pageSize=@pageSize">&raquo;</a>
-            </li>
-        }
-    </ul>
-} *@
-
+            @if (pageNumber < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?categoryId=@selectedCategory&pageNumber=@(pageNumber + 1)&pageSize=@pageSize">&raquo;</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

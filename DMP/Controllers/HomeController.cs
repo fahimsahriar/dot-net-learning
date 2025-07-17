@@ -2,6 +2,7 @@ using DMP.DataAccess.Data;
 using DMP.DataAccess.Repository.IRepository;
 using DMP.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
 
 namespace DotNetMasteryProject.Controllers
@@ -19,7 +20,7 @@ namespace DotNetMasteryProject.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
+        public async Task<IActionResult> Index(int? categoryId, int pageNumber = 1, int pageSize = 8)
         {
             if (pageNumber < 0 || pageSize < 0)
             {
@@ -28,11 +29,13 @@ namespace DotNetMasteryProject.Controllers
             try
             {
                 var categories = _context.Categories.ToList();
-                //ViewBag.CurrentPage = pageNumber;
-                //ViewBag.PageSize = pageSize;
-                //var totalItems = await _productRepository.GetTotalItemCount();
-                //ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-                var products = await _productRepository.GetAll(pageNumber, pageSize);
+                //var categories = _context.Categories.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name }).ToList();
+                ViewBag.categories = categories;
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.PageSize = pageSize;
+                var totalItems = await _productRepository.GetTotalItemCount();
+                ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var products = await _productRepository.GellAllWithCategoryAsync(categoryId,pageNumber, pageSize);
                 if (products == null || !products.Any())
                 {
                     return View(new List<Product>());

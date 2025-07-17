@@ -29,13 +29,12 @@ namespace DotNetMasteryProject.Controllers
             }
             try
             {
-                var categories = _context.Categories.ToList();
-                ViewBag.Categories = categories;
                 ViewBag.CurrentPage = pageNumber;
                 ViewBag.PageSize = pageSize;
                 var totalItems = await _productRepository.GetTotalItemCount();
                 ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-                var products = await _productRepository.GetAll(pageNumber, pageSize);
+                //var products = await _productRepository.GetAll(pageNumber, pageSize);
+                var products = await _productRepository.GellAllWithCategoryAsync(pageNumber, pageSize);
                 if (products == null || !products.Any())
                 {
                     return View(new List<Product>());

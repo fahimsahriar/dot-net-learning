@@ -11,6 +11,8 @@ namespace DMP.DataAccess.Repository.IRepository
 
         Task<IEnumerable<Product>> GetAll(int pageNumber = 1, int pageSize = 10);
 
+        Task<IEnumerable<Product>> GellAllWithCategoryAsync(int? categoryId, int pageNumber = 1, int pageSize = 10);
+
         Task<int> GetTotalItemCount();
 
         void Remove(Product entity);
